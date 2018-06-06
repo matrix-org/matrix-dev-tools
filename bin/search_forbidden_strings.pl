@@ -43,7 +43,7 @@ while(<$CONFIG>) {
 
     my @array = split("===");
 
-    if($#array > 1) {
+    if(scalar(@array) > 1) {
         $config{$array[0]} = -1 * $array[1];
     } else {
         $config{$array[0]} = 0;
