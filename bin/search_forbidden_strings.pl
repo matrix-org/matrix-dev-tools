@@ -50,6 +50,8 @@ while(<$CONFIG>) {
     }
 }
 
+close $CONFIG;
+
 while ($root) {
     find( \&analyseFile, $root );
 
@@ -93,4 +95,6 @@ sub analyseFile {
             }
         }
     }
+
+    close $INPUT;
 }
