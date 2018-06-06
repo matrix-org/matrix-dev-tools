@@ -41,7 +41,7 @@ while(<$CONFIG>) {
     # Skip comment
     next if(/^#/);
 
-    my @array = split("/===/");
+    my @array = split("===");
 
     if($#array > 1) {
         $config{$array[0]} = -1 * $array[1];
