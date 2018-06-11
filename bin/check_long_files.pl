@@ -35,9 +35,9 @@ while ($root) {
 
 if (scalar(@too_long_files) > 0) {
     if (scalar(@too_long_files) > 1) {
-        print STDERR "🔴 Error: " . scalar(@too_long_files) . " files have more than " . $limit . " lines:\n";
+        print STDERR "❌ Error: " . scalar(@too_long_files) . " files have more than " . $limit . " lines:\n";
     } else {
-        print STDERR "🔴 Error: " . scalar(@too_long_files) . " file has more than " . $limit . " lines:\n";
+        print STDERR "❌ Error: " . scalar(@too_long_files) . " file has more than " . $limit . " lines:\n";
     }
 
     print "  " . $_ . "\n" foreach (sort (@too_long_files));
