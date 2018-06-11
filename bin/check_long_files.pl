@@ -28,18 +28,23 @@ my $root = shift or die $usage;
 my @too_long_files;
 
 while ($root) {
-    find( \&analyseFile, $root );
+    find(\&analyseFile, $root);
 
     $root = shift;
 }
 
-if(scalar(@too_long_files) > 0) {
-    print STDERR "Error: " . scalar(@too_long_files) . " file(s) has more than " . $limit ." lines.\n";
+if (scalar(@too_long_files) > 0) {
+    if (scalar(@too_long_files) > 1) {
+        print STDERR "🔴 Error: " . scalar(@too_long_files) . " files have more than " . $limit . " lines:\n";
+    } else {
+        print STDERR "🔴 Error: " . scalar(@too_long_files) . " file has more than " . $limit . " lines:\n";
+    }
 
-    print $_ . "\n" foreach(sort(@too_long_files));
+    print "  " . $_ . "\n" foreach (sort (@too_long_files));
 
     exit 1;
-} else {
+}
+else {
     print STDERR "All clear!\n";
     exit 0;
 }
@@ -56,13 +61,13 @@ sub analyseFile {
 
     my $count = 0;
 
-    while ( <$INPUT> ) {
+    while (<$INPUT>) {
         $count++;
     }
 
     close $INPUT;
 
-    if($count > $limit) {
-        push(@too_long_files, $file);
+    if ($count > $limit) {
+        push(@too_long_files, $File::Find::name . " (" . $count . " lines)");
     }
 }
