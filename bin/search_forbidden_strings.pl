@@ -32,20 +32,21 @@ open my $CONFIG, '<', $config_file or die "Config file not found";
 my %config;
 my %last_found_occurrence_file;
 
-while(<$CONFIG>) {
+while (<$CONFIG>) {
     chomp;
 
     # Skip empty lines
-    next if(/^$/);
+    next if (/^$/);
 
     # Skip comment
-    next if(/^#/);
+    next if (/^#/);
 
     my @array = split("===");
 
-    if(scalar(@array) > 1) {
+    if (scalar(@array) > 1) {
         $config{$array[0]} = -1 * $array[1];
-    } else {
+    }
+    else {
         $config{$array[0]} = 0;
     }
 }
@@ -53,25 +54,36 @@ while(<$CONFIG>) {
 close $CONFIG;
 
 while ($root) {
-    find( \&analyseFile, $root );
+    find(\&analyseFile, $root);
 
     $root = shift;
 }
 
 my $error = 0;
 
-foreach (keys(%config)) {
-    if($config{$_} > 0) {
-        print "Error: '" . $_ . "' detected " . $config{$_} . " time(s), last in file '" . $last_found_occurrence_file{$_} . "'.\n";
+foreach (sort (keys(%config))) {
+    if ($config{$_} > 0) {
+        if ($config{$_} > 1) {
+            print "🔴 Error: '" . $_ . "' detected " . $config{$_} . " times, last in file '" . $last_found_occurrence_file{$_} . "'.\n";
+        }
+        else {
+            print "🔴 Error: '" . $_ . "' detected " . $config{$_} . " time, in file '" . $last_found_occurrence_file{$_} . "'.\n";
+        }
         $error++;
     }
 }
 
-if($error > 0) {
-    print STDERR $error . " forbidden pattern(s) detected\n";
+if ($error > 0) {
+    if ($error > 1) {
+        print STDERR $error . " forbidden patterns detected\n";
+    }
+    else {
+        print STDERR $error . " forbidden pattern detected\n";
+    }
     exit 1;
-} else {
-    print STDERR "All clear, commit allowed!\n";
+}
+else {
+    print STDERR "All clear!\n";
     exit 0;
 }
 
@@ -85,7 +97,7 @@ sub analyseFile {
         return;
     };
 
-    while ( <$INPUT> ) {
+    while (<$INPUT>) {
         my $line = $_;
 
         foreach (keys(%config)) {
