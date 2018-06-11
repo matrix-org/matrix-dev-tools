@@ -64,10 +64,10 @@ my $error = 0;
 foreach (sort (keys(%config))) {
     if ($config{$_} > 0) {
         if ($config{$_} > 1) {
-            print "🔴 Error: '" . $_ . "' detected " . $config{$_} . " times, last in file '" . $last_found_occurrence_file{$_} . "'.\n";
+            print "❌ Error: '" . $_ . "' detected " . $config{$_} . " times, last in file '" . $last_found_occurrence_file{$_} . "'.\n";
         }
         else {
-            print "🔴 Error: '" . $_ . "' detected " . $config{$_} . " time, in file '" . $last_found_occurrence_file{$_} . "'.\n";
+            print "❌ Error: '" . $_ . "' detected " . $config{$_} . " time, in file '" . $last_found_occurrence_file{$_} . "'.\n";
         }
         $error++;
     }
