@@ -30,15 +30,26 @@ my $root = shift or die $usage;
 open my $CONFIG, '<', $config_file or die "Config file not found";
 
 my %config;
+my %configToRule;
 my %last_found_occurrence_file;
+
+my $lastRule = "";
 
 while (<$CONFIG>) {
     chomp;
 
     # Skip empty lines
-    next if (/^$/);
+    if (/^$/) {
+        $lastRule = "";
+        next;
+    }
 
-    # Skip comment
+    # Get the rule
+    if (/^### (.*)/) {
+        $lastRule = $1;
+    }
+
+    # Skip comment (including rule)
     next if (/^#/);
 
     my @array = split("===");
@@ -49,6 +60,8 @@ while (<$CONFIG>) {
     else {
         $config{$array[0]} = 0;
     }
+
+    $configToRule{$array[0]} = $lastRule;
 }
 
 close $CONFIG;
@@ -69,6 +82,9 @@ foreach (sort (keys(%config))) {
         else {
             print "❌ Error: '" . $_ . "' detected " . $config{$_} . " time, in file '" . $last_found_occurrence_file{$_} . "'.\n";
         }
+
+        print "Rule: " . $configToRule{$_} . "\n" if (length($configToRule{$_}) > 0);
+
         $error++;
     }
 }
