@@ -33,6 +33,9 @@ my %config;
 my %configToRule;
 my %last_found_occurrence_file;
 
+# Note: if empty, all files will be checked
+my @fileExtensionsToCheck;
+
 my $lastRule = "";
 
 while (<$CONFIG>) {
@@ -47,6 +50,11 @@ while (<$CONFIG>) {
     # Get the rule
     if (/^### (.*)/) {
         $lastRule = $1;
+    }
+
+    # Get a file extension
+    if (/^# Extension:(.*)$/) {
+        push(@fileExtensionsToCheck, $1);
     }
 
     # Skip comment (including rule)
@@ -107,6 +115,15 @@ else {
 
 sub analyseFile {
     my $file = $_;
+
+    my $analyseFile = 0;
+    foreach (@fileExtensionsToCheck) {
+        if ($file =~ /$_/) {
+            $analyseFile = 1;
+        }
+    }
+
+    return unless $analyseFile || scalar(@fileExtensionsToCheck) == 0 ;
 
     open my $INPUT, '<', $file or do {
         warn qq|WARNING: Could not open $File::Find::name\n|;
