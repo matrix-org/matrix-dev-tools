@@ -32,6 +32,7 @@ open my $CONFIG, '<', $config_file or die "Config file not found";
 my %config;
 my %configToRule;
 my %last_found_occurrence_file;
+my %last_found_occurrence_file_at_line;
 
 # Note: if empty, all files will be checked
 my @fileExtensionsToCheck;
@@ -85,10 +86,10 @@ my $error = 0;
 foreach (sort (keys(%config))) {
     if ($config{$_} > 0) {
         if ($config{$_} > 1) {
-            print "❌ Error: '" . $_ . "' detected " . $config{$_} . " times, last in file '" . $last_found_occurrence_file{$_} . "'.\n";
+            print "❌ Error: '" . $_ . "' detected " . $config{$_} . " times, last in file '" . $last_found_occurrence_file{$_} . "', at line " . $last_found_occurrence_file_at_line{$_} . ".\n";
         }
         else {
-            print "❌ Error: '" . $_ . "' detected " . $config{$_} . " time, in file '" . $last_found_occurrence_file{$_} . "'.\n";
+            print "❌ Error: '" . $_ . "' detected " . $config{$_} . " time, in file '" . $last_found_occurrence_file{$_} . "', at line " . $last_found_occurrence_file_at_line{$_} . ".\n";
         }
 
         print "Rule: " . $configToRule{$_} . "\n" if (length($configToRule{$_}) > 0);
@@ -123,20 +124,25 @@ sub analyseFile {
         }
     }
 
-    return unless $analyseFile || scalar(@fileExtensionsToCheck) == 0 ;
+    return unless $analyseFile || scalar(@fileExtensionsToCheck) == 0;
 
     open my $INPUT, '<', $file or do {
         warn qq|WARNING: Could not open $File::Find::name\n|;
         return;
     };
 
+    my $lineNumber = 0;
+
     while (<$INPUT>) {
         my $line = $_;
+
+        $lineNumber++;
 
         foreach (keys(%config)) {
             if ($line =~ /$_/) {
                 $config{$_}++;
                 $last_found_occurrence_file{$_} = $File::Find::name;
+                $last_found_occurrence_file_at_line{$_} = $lineNumber;
             }
         }
     }
